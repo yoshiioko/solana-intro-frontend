@@ -11,22 +11,26 @@ const Home: NextPage = () => {
   const [address, setAddress] = useState('')
 
   const addressSubmittedHandler = (address: string) => {
-    const key = new web3.PublicKey(address)
-    setAddress(key.toBase58())
-    
-    const connection = new web3.Connection(web3.clusterApiUrl('devnet'))
+    try {
+      const key = new web3.PublicKey(address)
+      setAddress(key.toBase58())
 
-    connection.getBalance(key).then(balance => {
-      setBalance(balance / web3.LAMPORTS_PER_SOL)
-    })
+      const connection = new web3.Connection(web3.clusterApiUrl('devnet'))
+
+      connection.getBalance(key).then((balance) => {
+        setBalance(balance / web3.LAMPORTS_PER_SOL)
+      })
+    } catch (error) {
+      setAddress('')
+      setBalance(0)
+      alert(error)
+    }
   }
 
   return (
     <div className={styles.App}>
       <header className={styles.AppHeader}>
-        <p>
-          Start Your Solana Journey
-        </p>
+        <p>Start Your Solana Journey</p>
         <AddressForm handler={addressSubmittedHandler} />
         <p>{`Address: ${address}`}</p>
         <p>{`Balance: ${balance} SOL`}</p>
